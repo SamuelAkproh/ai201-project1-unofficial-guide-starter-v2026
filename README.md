@@ -2,6 +2,18 @@
 
 Samuel Akproh: campus_life corpus
 
+> **This file is your submission.** Fill it in as you go — most sections get
+> written during the milestone that produces them, not at the end.
+>
+> How the starter works, and every command you'll need, is in `RUNNING.md`.
+> Leave that file alone.
+>
+> **Paste everything as text.** No screenshots, no video. A typed table gets
+> full credit; a picture of the same table gets none.
+>
+> Delete these instruction blocks as you replace them. The `<!-- -->` comments
+> are notes to you and don't show up when the page renders — you can leave them
+> or remove them.
 
 ---
 
@@ -26,38 +38,42 @@ The starter's fixed 800-character window did not split anything because most `ca
 **Chunk 1** —  source: admin_add_drop_deadline.txt#0  by: chunker.py::split_documents
 
 
-You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
 
 ```
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
+
 ```
 
 **Chunk 2** — source:course_cs_340_workload.txt#1  — produced by: chunker.py::split_documents
 
-It's front-loaded — the first month is heavier than the rest, partly because you're learning the format.
+
 
 ```
+It's front-loaded — the first month is heavier than the rest, partly because you're learning the format.
 ```
 
 **Chunk 3** — source:  course_phys_130_exams.txt#1 — produced by: chunker  py::split_documents
 
-The lab practical is worth 20% and almost nobody prepares for it.
 
 ```
+The lab practical is worth 20% and almost nobody prepares for it.
 ```
 
 **Chunk 4** —  source: dining_verrill_street_grill_followup.txt#0 — produced by:  chunker.py::split_documents
 
-Adding to what people have said about Verrill Street Grill. The wait figure of up to 30 minutes on Friday evenings matches what I've seen. If you're trying to eat between classes, go before 11:45 and it's a different building entirely.
+
 
 ```
+Adding to what people have said about Verrill Street Grill. The wait figure of up to 30 minutes on Friday evenings matches what I've seen. If you're trying to eat between classes, go before 11:45 and it's a different building entirely.
 ```
 
 **Chunk 5** — source: housing_morrow_house.txt#1  — 
 produced by: chunker.py::split_documents
 
 
-The good: cheapest housing tier by about $900 a year, and the singles are real singles.
+
 ```
+The good: cheapest housing tier by about $900 a year, and the singles are real singles.
 ```
 
 ## Sample Answer
@@ -70,10 +86,10 @@ No, the housing lottery is not completely random for all students. While rising 
 
 Source: `admin_housing_lottery.txt`
 
-Sources retrieved: admin_housing_lottery.txt, advising_registration.txt, housing_aldridge_hall.txt, housing_morrow_house.txt, housing_tamsin_court.txt
+
+```Sources retrieved: admin_housing_lottery.txt, advising_registration.txt, housing_aldridge_hall.txt, housing_morrow_house.txt, housing_tamsin_court.txt
 
 1 model calls this session, 414 tokens (355 in, 59 out)
-```
 ```
 
 **My relevance cutoff:** `0.70`
@@ -94,12 +110,8 @@ Sources retrieved: admin_housing_lottery.txt, advising_registration.txt, housing
 | How do I write a for loop in Rust? | No | 0.831 |
 
 ## How I Used AI
-1. **Developing the paragraph chunker (`chunker.py`):**
-   - **What I asked:** I explained that `campus_life` contains short forum posts where the starter's 800-character fixed window produced 88 identical whole-document chunks. I asked Gemini to generate a splitting function that respects natural paragraph boundaries instead of character counts.
-   - **What came back:** Gemini suggested splitting strings on `\n\n` into paragraph chunks and adding a basic length check.
-   - **What I changed:** I modified the code to ensure `produced_by` correctly reported `"chunker.py::split_documents"`, added a fallback to keep short single-paragraph posts intact if no double newlines existed, and tuned the length filter to skip isolated heading lines under 40 characters so they wouldn't become fragmented chunks.
 
-2. **Developing the paragraph chunker:**
+
 <!-- Two specific moments. For each: what you asked for, what came back, and
      what you changed about it.
 
@@ -109,10 +121,16 @@ Sources retrieved: admin_housing_lottery.txt, advising_registration.txt, housing
 
      Milestone 5. -->
 
-**1.**
+1. **Developing the chunker function(`chunker.py`):**
+   - **What I asked:** I explained that `campus_life` contains short forum posts where the starter's 800-character fixed window produced 88 identical whole-document chunks. I asked Gemini to generate a splitting function that respects natural paragraph boundaries instead of character counts.
+   - **What came back:** Gemini suggested splitting strings on `\n\n` into paragraph chunks and adding a basic length check.
+   - **What I changed:** I modified the code to ensure `produced_by` correctly reported `"chunker.py::split_documents"`, added a fallback to keep short single-paragraph posts intact if no double newlines existed, and tuned the length filter to skip isolated heading lines under 40 characters so they wouldn't become fragmented chunks.
 
-**2.**
-
+ 
+2. **Selecting and analyzing the relevance cutoff (`config.py`):**
+   - **What I asked:** After running `run_eval.py`, I shared my evaluation distance scores (campus question distances from 0.179 to 0.621 vs. out-of-scope question distances from 0.821 to 0.885) and asked where to place the cutoff threshold.
+   - **What came back:** Gemini analyzed the distribution gap and recommended setting `RELEVANCE_CUTOFF` to 0.70 to create a safe boundary between the two clusters.
+   - **What I changed:** Rather than blindly accepting the default 0.60 (which was slightly too tight and would have blocked my valid freshman parking question at 0.621), I verified the math against my test logs, updated `config.py` to 0.70, and confirmed that all 5 out-of-scope questions were still cleanly refused by the gate.
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
