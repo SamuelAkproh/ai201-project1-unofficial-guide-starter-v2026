@@ -1,6 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
+Samuel Akproh, I picked the campus_life corpus
 
 > **This file is your submission.** Fill it in as you go — most sections get
 > written during the milestone that produces them, not at the end.
@@ -53,28 +53,39 @@
 
      Milestone 3. -->
 
-**Chunk 1** — source: `` — produced by: ``
+**Chunk 1** —  source: admin_add_drop_deadline.txt#0  by: chunker.py::split_documents
+
+
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
 
 ```
 ```
 
-**Chunk 2** — source: `` — produced by: ``
+**Chunk 2** — source:course_cs_340_workload.txt#1  — produced by: chunker.py::split_documents
+
+It's front-loaded — the first month is heavier than the rest, partly because you're learning the format.
+```
+```
+
+**Chunk 3** — source:  course_phys_130_exams.txt#1 — produced by: chunker  py::split_documents
+
+The lab practical is worth 20% and almost nobody prepares for it.
 
 ```
 ```
 
-**Chunk 3** — source: `` — produced by: ``
+**Chunk 4** —  source: dining_verrill_street_grill_followup.txt#0 — produced by:  chunker.py::split_documents
+
+Adding to what people have said about Verrill Street Grill. The wait figure of up to 30 minutes on Friday evenings matches what I've seen. If you're trying to eat between classes, go before 11:45 and it's a different building entirely.
 
 ```
 ```
 
-**Chunk 4** — source: `` — produced by: ``
+**Chunk 5** — source: housing_morrow_house.txt#1  — 
+produced by: chunker.py::split_documents
 
-```
-```
 
-**Chunk 5** — source: `` — produced by: ``
-
+The good: cheapest housing tier by about $900 a year, and the singles are real singles.
 ```
 ```
 
