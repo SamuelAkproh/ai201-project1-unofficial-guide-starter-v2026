@@ -23,8 +23,8 @@ For at least 4 of my 5 test questions, the retrieved chunks include one that
 contains the answer.
 
 **Why this target:**
-<!-- e.g. "One of my questions is about a topic only two documents mention, so
-     I expect that one to be hard." -->
+One of my questions is about a topic that is formulated in a way that looks like one outside the scope of the chunks, so
+     I expect that one to be be hard to answer. 
 
 ---
 
@@ -33,8 +33,9 @@ contains the answer.
 Every answer the system produces names at least one source document.
 
 **Why this target:**
-<!-- Why all five and not four? What about your setup makes that achievable —
-     or what would have to go wrong for it not to be? -->
+ Because the pipeline only ingests and load documents that it was fed into, it can only uses those to answer the questions. The GROUNDING_INSTRUCTIONS in generate.py strictly looks at the information in the documents and if the documents don't cover the question, it says you don't have not enough information.
+
+
 
 ---
 
@@ -50,12 +51,11 @@ in at least 4 of 5 tries.
      just keep five of them, or the "4 of 5" above has nothing to be 4 of. -->
 
 **Why this target:**
-<!-- What did your distances look like when you set the cutoff in Milestone 4?
-     Was there a clean gap, or did the two groups overlap? -->
+"The cutoff is equal to 0.6. If the  distance between the chunks embeddings and the question is greater than the cutoff number, that's why out of scope questions gave that answer for 4 out of 5 questions. The one question that it didn't account for might be a very rare edge case where the question text share a coincidential semantic dimension with the chunks"
 
 ---
 
-## 4. Something about your chunks
+## 4. No chunk in the corpus is shorter than 100 characters or longer than 800 characters.
 
 <!-- YOU WRITE THIS ONE.
 
@@ -72,12 +72,12 @@ in at least 4 of 5 tries.
 
 
 **Why this target:**
-
+The campus_life corpus consists of 88 documents of short student posts. No chunk has a character count of less than 100 and more than 800. The 100 floor prevents posts to contain only headers, blank spaces to be standalone chunks, while the 800 ceiling makes sure unrelated posts don't share the same chunk
 
 
 ---
 
-## 5. Your choice
+## 5. For all 5 of my answered test questions, the document cited in the final answer actually contains the specific claim made in the response, with 0 hallucinated source citations.
 
 <!-- YOU WRITE THIS ONE TOO.
 
@@ -91,7 +91,7 @@ in at least 4 of 5 tries.
 
 **Why this target:**
 
-
+As mentioned in criterion 2, an answer can come up with a source for the generated answer. But the cited file may not contain the information the answer claims it does. I chose 5 of 5 because attributing a fact to the wrong document completely breaks user trust, which goes against the rules of our system and verifying that the claim actually exists in the named .txt file is either 100% correct or it is not.
 
 ---
 
