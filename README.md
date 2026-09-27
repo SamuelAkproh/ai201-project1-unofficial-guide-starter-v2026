@@ -20,38 +20,20 @@ Samuel Akproh: campus_life corpus
 # Unit 1
 
 ## What This Does
+This system is an unofficial campus guide built on a Retrieval-Augmented Generation (RAG) architecture using the `campus_life` corpus. It indexes 88 student posts covering dorm life, course workloads, dining options, and administrative policies (such as add/drop deadlines and the housing lottery). Given a plain question, it retrieves semantically relevant text passages from ChromaDB and prompts Gemini to produce grounded answers strictly citing the source files.
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
-
-     Milestone 5. -->
 
 ## Chunking Strategy
+The starter's fixed 800-character window did not split anything because most `campus_life` posts are under 500 characters, turning 88 documents into 88 whole posts. To preserve complete thoughts rather than slicing arbitrarily, I replaced it with a paragraph-based chunker in `chunker.py::split_documents`. It splits on double-newlines (`\n\n`), discards isolated fragments under 40 characters, and preserves entire multi-sentence paragraphs as cohesive thoughts so each chunk contains sufficient context to stand on its own.
 
-**Chunk size:**
-**Overlap:**
 
-<!-- What about YOUR documents made you pick these numbers? Short posts and
-     long sectioned guides don't want the same chunking, and "800 seemed
-     reasonable" earns nothing. Point at something you noticed when you read
-     the documents in Milestone 1.
+**Chunk size:** Variable, paragraph-based (natural post boundaries, min 40 characters up to ~500 characters)
 
-     If you changed your mind partway through, say so and say why. That's worth
-     more than pretending you got it right first time.
+**Overlap:** 0 characters
 
-     Milestone 3. -->
+*Why these values:* The `campus_life` corpus consists of 88 short, self-contained student forum posts rather than long multi-page policy manuals. When reading the files in Milestone 1, I observed that a single post or paragraph rarely exceeds 500 characters and captures one cohesive idea. By splitting on double-newlines (`\n\n`), each chunk captures an entire post or cohesive thought without needing an artificial character window. Overlap is set to 0 because distinct forum posts and paragraphs are independent—duplicating lines across independent posts would add redundant tokens to the prompt without adding context.
 
 ## Sample Chunks
-
-<!-- Five chunks, pasted as text. Label each one and name the file it came from
-     AND the function that produced it — the grader checks your code against
-     what you claim here.
-
-     `python app.py chunks -n 5` prints all three for you. Copy them straight
-     across.
-
-     Milestone 3. -->
 
 **Chunk 1** —  source: admin_add_drop_deadline.txt#0  by: chunker.py::split_documents
 
@@ -64,6 +46,7 @@ You can add a course through the end of the second week. Dropping is a longer wi
 **Chunk 2** — source:course_cs_340_workload.txt#1  — produced by: chunker.py::split_documents
 
 It's front-loaded — the first month is heavier than the rest, partly because you're learning the format.
+
 ```
 ```
 
@@ -91,33 +74,44 @@ The good: cheapest housing tier by about $900 a year, and the singles are real s
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
-
 **Question:**
-
+Is the housing lottery completely random for all students?
 **Answer:**
 
+No, the housing lottery is not completely random for all students. While rising sophomores get a number drawn at random, juniors and seniors are ordered by accumulated credit hours first, with random tie-breaking used only for ties.
+
+Source: `admin_housing_lottery.txt`
+
+Sources retrieved: admin_housing_lottery.txt, advising_registration.txt, housing_aldridge_hall.txt, housing_morrow_house.txt, housing_tamsin_court.txt
+
+1 model calls this session, 414 tokens (355 in, 59 out)
 ```
 ```
 
-**My relevance cutoff:**
+**My relevance cutoff:** `0.70`
 
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+*Analysis:* My campus life questions produced semantic distances ranging from `0.179` to `0.621`. The off-topic questions in `OUT_OF_SCOPE` produced much higher distances between `0.821` and `0.885`. I set the cutoff to `0.70`, right in the gap between `0.621` and `0.821`. This permits all legitimate campus queries to pass through while cleanly refusing all 5 out-of-scope questions.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| Is the housing lottery completely random for all students? | Yes | 0.197 |
+| How are rising sophomores assigned numbers in the housing lottery? | Yes | 0.179 |
+| Can freshmen get a campus parking permit? | Yes | 0.621 |
+| When do study abroad applications open? | Yes | 0.307 |
+| What are the common student complaints about Morrow House? | Yes | 0.562 |
+| What is the capital of Mongolia? | No | 0.821 |
+| How do I change the oil in a diesel engine? | No | 0.885 |
+| Who won the 1994 World Cup? | No | 0.874 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.824 |
+| How do I write a for loop in Rust? | No | 0.831 |
 
 ## How I Used AI
+1. **Developing the paragraph chunker (`chunker.py`):**
+   - **What I asked:** I explained that `campus_life` contains short forum posts where the starter's 800-character fixed window produced 88 identical whole-document chunks. I asked Gemini to generate a splitting function that respects natural paragraph boundaries instead of character counts.
+   - **What came back:** Gemini suggested splitting strings on `\n\n` into paragraph chunks and adding a basic length check.
+   - **What I changed:** I modified the code to ensure `produced_by` correctly reported `"chunker.py::split_documents"`, added a fallback to keep short single-paragraph posts intact if no double newlines existed, and tuned the length filter to skip isolated heading lines under 40 characters so they wouldn't become fragmented chunks.
 
+2. **Developing the paragraph chunker:**
 <!-- Two specific moments. For each: what you asked for, what came back, and
      what you changed about it.
 
